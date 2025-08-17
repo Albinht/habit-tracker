@@ -15,22 +15,19 @@ export default function DashboardLayout({
   // User info is displayed via client component to keep it performant
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="border-b bg-white">
+    <div className="min-h-screen">
+      <nav className="border-b bg-white/90 backdrop-blur-sm">
         <div className="container mx-auto px-2 sm:px-4 py-4">
           <div className="flex justify-between items-center">
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <div className="bg-green-500 rounded-full p-0.5 flex items-center justify-center">
-                <Image 
-                  src="/notion-avatar-1755390000172.svg" 
-                  alt="niblah Logo" 
-                  width={40} 
-                  height={40}
-                  priority
-                  className="w-9 h-9 sm:w-10 sm:h-10"
-                />
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">niblah</h1>
+              <Image 
+                src="/Traqur logo.png" 
+                alt="Traqur Logo" 
+                width={120} 
+                height={40}
+                priority
+                className="h-8 w-auto"
+              />
             </Link>
             
             <div className="flex items-center space-x-4">

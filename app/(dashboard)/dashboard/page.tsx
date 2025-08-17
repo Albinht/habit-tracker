@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { HabitCardWithHeatmap } from '@/components/habit-card-heatmap'
 import { YearOverview } from '@/components/year-overview'
 import { NewHabitDropdown } from '@/components/new-habit-dropdown'
-import { FREE_HABIT_LIMIT } from '@/lib/constants'
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -17,40 +16,92 @@ export default async function DashboardPage() {
   const today = new Date()
   const yearAgo = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000)
 
-  // Load habits with all entries from last year for heat map display
-  const habits = await prisma.habit.findMany({
-    where: { userId: user.id },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      color: true,
-      unit: true,
-      goalValue: true,
-      goalType: true,
-      createdAt: true,
-      entries: {
-        where: {
-          date: {
-            gte: yearAgo,
-            lte: today,
+  let habits = []
+
+  // For local development, use mock data if database fails
+  if (process.env.NODE_ENV === 'development') {
+    // Generate mock entries for the last 30 days
+    const mockEntries = []
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000)
+      if (Math.random() > 0.3) { // 70% chance of having an entry
+        mockEntries.push({
+          id: `mock-entry-${i}`,
+          value: Math.floor(Math.random() * 15000) + 5000, // Random steps between 5k-20k
+          date: date,
+        })
+      }
+    }
+
+    habits = [
+      {
+        id: 'mock-habit-1',
+        name: 'Walk 10k steps',
+        description: 'Daily walking goal',
+        color: '#10b981',
+        unit: 'steps',
+        goalValue: 10000,
+        goalType: 'daily',
+        createdAt: new Date(),
+        entries: mockEntries,
+      },
+      {
+        id: 'mock-habit-2',
+        name: 'Drink 8 glasses of water',
+        description: 'Stay hydrated',
+        color: '#3b82f6',
+        unit: 'glasses',
+        goalValue: 8,
+        goalType: 'daily',
+        createdAt: new Date(),
+        entries: mockEntries.slice(0, 20), // Less consistent
+      },
+      {
+        id: 'mock-habit-3',
+        name: 'Read for 30 minutes',
+        description: 'Daily reading habit',
+        color: '#f59e0b',
+        unit: 'minutes',
+        goalValue: 30,
+        goalType: 'daily',
+        createdAt: new Date(),
+        entries: mockEntries.slice(0, 15), // Even less consistent
+      },
+    ]
+  } else {
+    // Load habits with all entries from last year for heat map display
+    habits = await prisma.habit.findMany({
+      where: { userId: user.id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        color: true,
+        unit: true,
+        goalValue: true,
+        goalType: true,
+        createdAt: true,
+        entries: {
+          where: {
+            date: {
+              gte: yearAgo,
+              lte: today,
+            },
+          },
+          select: {
+            id: true,
+            value: true,
+            date: true,
+          },
+          orderBy: {
+            date: 'desc',
           },
         },
-        select: {
-          id: true,
-          value: true,
-          date: true,
-        },
-        orderBy: {
-          date: 'desc',
-        },
       },
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 10, // Show only first 10 habits initially
-  })
-
-  const isAtLimit = habits.length >= FREE_HABIT_LIMIT && !user.isPro
+      orderBy: { createdAt: 'desc' },
+      take: 10, // Show only first 10 habits initially
+    })
+  }
 
   return (
     <div>
@@ -61,9 +112,7 @@ export default async function DashboardPage() {
             Track your daily progress and build consistency
           </p>
         </div>
-        {!isAtLimit && (
-          <NewHabitDropdown className="w-full sm:w-auto min-h-[44px] text-base" />
-        )}
+        <NewHabitDropdown className="w-full sm:w-auto min-h-[44px] text-base" />
       </div>
 
       {/* Year Overview - only show if user has habits */}
@@ -80,23 +129,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       ) : (
-        <>
-          {isAtLimit && (
-            <Card className="mb-6 border-amber-200 bg-amber-50">
-              <CardContent className="py-4">
-                <p className="text-amber-800">
-                  You&apos;ve reached the free plan limit of {FREE_HABIT_LIMIT} habits. Upgrade to Pro for unlimited habits and more features.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-          
-          <div className="space-y-6">
-            {habits.map((habit) => (
-              <HabitCardWithHeatmap key={habit.id} habit={habit} />
-            ))}
-          </div>
-        </>
+        <div className="space-y-6">
+          {habits.map((habit) => (
+            <HabitCardWithHeatmap key={habit.id} habit={habit} />
+          ))}
+        </div>
       )}
     </div>
   )

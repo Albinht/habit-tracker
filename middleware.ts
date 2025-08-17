@@ -36,6 +36,16 @@ export async function middleware(request: NextRequest) {
 
   // Only check auth for protected paths that aren't public
   if (isProtectedPath && !isPublicApiPath) {
+    // Skip authentication for local development
+    const isLocalDevelopment = request.nextUrl.hostname === 'localhost' || 
+                               request.nextUrl.hostname === '127.0.0.1' ||
+                               process.env.NODE_ENV === 'development'
+    
+    if (isLocalDevelopment) {
+      // Allow access without authentication in local development
+      return NextResponse.next()
+    }
+    
     const token = await getToken({ 
       req: request,
       secret: process.env.NEXTAUTH_SECRET 

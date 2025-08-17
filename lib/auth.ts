@@ -7,6 +7,18 @@ export async function getSession() {
 }
 
 export async function getCurrentUser() {
+  // For local development, return mock user without database dependency
+  if (process.env.NODE_ENV === 'development') {
+    return {
+      id: 'mock-user-id',
+      email: 'albinht@gmail.com',
+      name: 'Albin',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      password: 'password123',
+    }
+  }
+
   const session = await getSession()
 
   if (!session?.user?.email) {
@@ -31,23 +43,12 @@ export async function getCurrentUser() {
 }
 
 export async function checkUserPlan(userId: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { subscription: true },
-  })
-
-  if (!user) return { isPro: false, canUseFeature: false }
-
-  const now = new Date()
-  const isInTrial = user.trialEndsAt && user.trialEndsAt > now
-  const hasActiveSubscription = 
-    user.subscription?.status === 'active' || 
-    user.subscription?.status === 'trialing'
-
+  // All users have access to all features now
   return {
-    isPro: user.isPro || isInTrial || hasActiveSubscription,
-    isInTrial,
-    hasActiveSubscription,
-    trialEndsAt: user.trialEndsAt,
+    isPro: true,
+    canUseFeature: true,
+    isInTrial: false,
+    hasActiveSubscription: true,
+    trialEndsAt: null,
   }
 }
