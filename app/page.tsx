@@ -81,7 +81,7 @@ export default function LandingPage() {
       </div>
 
       {/* Habit Heatmap Section */}
-      <div className="py-12 sm:py-20">
+      <div className="pt-20 pb-12 sm:pt-0 sm:-mt-36 sm:pb-20">
         <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-8">
           {/* Interactive Heatmap Demo */}
           <LandingPageHeatmap />

@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Suspense } from 'react'
+import { Settings } from 'lucide-react'
 import { UserInfo } from '@/components/user-info'
 import { Skeleton } from '@/components/ui/skeleton'
-import { MobileNav } from '@/components/mobile-nav'
+import { MobileMenu } from '@/components/mobile-menu'
 
 export default function DashboardLayout({
   children,
@@ -31,18 +32,19 @@ export default function DashboardLayout({
             </Link>
             
             <div className="flex items-center space-x-4">
-              <MobileNav>
+              {/* Mobile Menu - Shows avatar button on mobile */}
+              <MobileMenu />
+              
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-6">
                 <Link href="/dashboard/settings" className="text-gray-600 hover:text-gray-900 flex items-center gap-2">
-                  <Image src="/scribble final version-39.svg" alt="Settings" width={16} height={16} className="h-4 w-4" />
+                  <Settings className="h-4 w-4" />
                   Settings
                 </Link>
-              </MobileNav>
-              
-              <div className="hidden md:block">
                 <Suspense fallback={
-                  <div className="flex items-center space-x-2 sm:space-x-4">
-                    <Skeleton className="h-4 w-16 sm:w-24" />
-                    <Skeleton className="h-9 w-16 sm:w-20" />
+                  <div className="flex items-center space-x-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-9 w-20" />
                   </div>
                 }>
                   <UserInfo />

@@ -8,19 +8,16 @@ interface CompletedPillProps {
 export function CompletedPill({ isCompleted, onEdit }: CompletedPillProps) {
   return (
     <div>
-      <span className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm">
+      <span className="inline-flex items-center gap-1 text-sm text-gray-600">
+        Completed
         {isCompleted ? (
-          <>
-            Completed
-            <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
-          </>
+          <span className="text-green-600 font-medium">✓</span>
         ) : (
           <>
-            Not completed
             {onEdit && (
               <button
                 onClick={onEdit}
-                className="p-0.5 hover:bg-gray-100 rounded"
+                className="p-0.5 hover:bg-gray-100 rounded ml-1"
                 aria-label="Edit today's entry"
               >
                 <Edit className="h-3 w-3" />

@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Habit Tracker",
-  description: "Track your habits and build better routines",
+  title: "Traq your habits with Traqur",
+  description: "Traq your habits with Traqur",
+  icons: {
+    icon: "/traqur-logo.png",
+    shortcut: "/traqur-logo.png",
+    apple: "/traqur-logo.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

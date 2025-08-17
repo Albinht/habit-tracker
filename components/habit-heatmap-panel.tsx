@@ -1,19 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-import { Calendar, MoreVertical } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { MoreVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 import type { Habit, HabitEntry, HabitStats } from '@/lib/types/habit'
-import { generateMonthData } from '@/lib/utils/date-utils'
-import { calculateHabitStats } from '@/lib/utils/stats-utils'
+import { generateRollingHeatmapData, getRollingDateRange } from '@/lib/utils/date-utils'
+import { calculateRollingStats } from '@/lib/utils/stats-utils'
 import { getCSSVariables } from '@/lib/utils/color-utils'
 
 // Sub-components
-import { MonthHeaderRow } from './habit-heatmap-panel/month-header-row'
 import { YAxisLabels } from './habit-heatmap-panel/y-axis-labels'
-import { HeatmapGrid } from './habit-heatmap-panel/heatmap-grid'
+import { ContinuousGrid } from './habit-heatmap-panel/continuous-grid'
 import { StatsPanel } from './habit-heatmap-panel/stats-panel'
 import { CompletedPill } from './habit-heatmap-panel/completed-pill'
 import { JournalDrawer } from './habit-heatmap-panel/journal-drawer'
@@ -21,46 +20,42 @@ import { ColorPicker } from './habit-heatmap-panel/color-picker'
 
 interface HabitHeatmapPanelProps {
   habit: Habit
-  year?: number
   entries: HabitEntry[]
   onChangeColor?: (habitId: string, color: string) => void
   onUpsertEntry?: (entry: HabitEntry) => void
+  onDeleteHabit?: () => void
   variant?: 'default' | 'landing'
 }
 
 export function HabitHeatmapPanel({
   habit,
-  year = new Date().getFullYear(),
   entries,
   onChangeColor,
   onUpsertEntry,
+  onDeleteHabit,
   variant = 'default'
 }: HabitHeatmapPanelProps) {
-  const [selectedYear, setSelectedYear] = useState(year)
   const [isJournalOpen, setIsJournalOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [showColorPicker, setShowColorPicker] = useState(false)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  // Filter entries for the selected year
-  const yearEntries = entries.filter(entry => 
-    entry.habitId === habit.id && entry.date.startsWith(selectedYear.toString())
-  )
+  // Filter entries for the habit
+  const habitEntries = entries.filter(entry => entry.habitId === habit.id)
 
-  // Generate month data for rendering
-  const monthsData = generateMonthData(selectedYear, yearEntries)
+  // Generate rolling heatmap data
+  const { gridDays, monthLabels } = generateRollingHeatmapData(habitEntries)
   
-  // Calculate statistics
-  const stats = calculateHabitStats(yearEntries, selectedYear)
+  // Calculate statistics for rolling 365 days
+  const stats = calculateRollingStats(habitEntries)
 
   // Check if today is completed
   const today = new Date().toISOString().split('T')[0]
-  const todayEntry = yearEntries.find(entry => entry.date === today)
+  const todayEntry = habitEntries.find(entry => entry.date === today)
   const isCompletedToday = todayEntry?.value === 1
 
-  // Handle year change
-  const handleYearChange = (newYear: number) => {
-    setSelectedYear(newYear)
-  }
+  // Get date range for display
+  const dateRange = getRollingDateRange()
 
   // Handle color change
   const handleColorChange = (newColor: string) => {
@@ -85,97 +80,84 @@ export function HabitHeatmapPanel({
     setSelectedDate(null)
   }
 
-  // Generate available years (current year ± 5)
-  const currentYear = new Date().getFullYear()
-  const availableYears = Array.from(
-    { length: 11 }, 
-    (_, i) => currentYear - 5 + i
-  )
+  const selectedEntry = selectedDate ? habitEntries.find(e => e.date === selectedDate) : null
 
-  const selectedEntry = selectedDate ? yearEntries.find(e => e.date === selectedDate) : null
+  // Auto-scroll to current week on mount (mobile)
+  useEffect(() => {
+    if (scrollContainerRef.current && window.innerWidth < 640) {
+      // Scroll to show the last few weeks (right side of the grid)
+      const scrollWidth = scrollContainerRef.current.scrollWidth
+      const clientWidth = scrollContainerRef.current.clientWidth
+      scrollContainerRef.current.scrollLeft = scrollWidth - clientWidth
+    }
+  }, [])
 
   return (
     <section 
       className={`rounded-xl border bg-white p-3 sm:p-6 w-full heatmap-panel ${variant === 'landing' ? 'heatmap-landing' : ''}`}
       style={{
         ...getCSSVariables(habit.color),
-        '--cell-size': '8px',
-        '--cell-gap': '1px',
-        '--cell-total': '9px'
+        '--cell-size': '17px',
+        '--cell-gap': '3px',
+        '--cell-total': '20px'
       } as React.CSSProperties}
     >
       <style jsx>{`
         .heatmap-panel {
-          --cell-size: 8px;
-          --cell-gap: 1px;
-          --cell-total: 9px;
+          --cell-size: 17px;
+          --cell-gap: 3px;
+          --cell-total: 20px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
           .heatmap-panel {
-            --cell-size: 10px;
-            --cell-gap: 1px;
-            --cell-total: 11px;
+            --cell-size: 23px;
+            --cell-gap: 3px;
+            --cell-total: 26px;
           }
         }
         @media (min-width: 1024px) {
           .heatmap-panel {
-            --cell-size: 13px;
-            --cell-gap: 2px;
-            --cell-total: 15px;
+            --cell-size: 30px;
+            --cell-gap: 4px;
+            --cell-total: 34px;
+          }
+          .heatmap-panel .heatmap-scroll-container {
+            width: 100%;
           }
           .heatmap-landing {
-            --cell-size: 16px;
-            --cell-gap: 2px;
-            --cell-total: 18px;
+            --cell-size: 34px;
+            --cell-gap: 4px;
+            --cell-total: 38px;
           }
         }
         .heatmap-scroll-container {
           scrollbar-width: none;
           -ms-overflow-style: none;
           scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
         }
         .heatmap-scroll-container::-webkit-scrollbar {
           display: none;
         }
-        .heatmap-scroll-container:not(:hover) .scroll-shadow-left,
-        .heatmap-scroll-container:not(:hover) .scroll-shadow-right {
+        .scroll-shadow-left,
+        .scroll-shadow-right {
           transition: opacity 0.3s ease;
+          z-index: 10;
         }
-        .heatmap-scroll-container.can-scroll-left .scroll-shadow-left {
-          opacity: 1;
-        }
-        .heatmap-scroll-container.can-scroll-right .scroll-shadow-right {
-          opacity: 1;
+        @media (max-width: 639px) {
+          .scroll-shadow-left {
+            background: linear-gradient(to right, white, transparent);
+          }
+          .scroll-shadow-right {
+            background: linear-gradient(to left, white, transparent);
+          }
         }
       `}</style>
       {/* Header */}
       <header className="flex items-center justify-between mb-2 sm:mb-0">
         <h2 className="text-lg sm:text-2xl font-semibold truncate pr-2">{habit.name}</h2>
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          <span className="text-xs sm:text-sm text-gray-500">{selectedYear}</span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="p-2 rounded-md hover:bg-gray-100"
-                aria-label="Open calendar"
-              >
-                <Calendar className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {availableYears.map((year) => (
-                <DropdownMenuItem
-                  key={year}
-                  onClick={() => handleYearChange(year)}
-                  className={selectedYear === year ? 'bg-gray-100' : ''}
-                >
-                  {year}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <span className="text-xs sm:text-sm text-gray-500">2025</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
@@ -191,6 +173,14 @@ export function HabitHeatmapPanel({
               <DropdownMenuItem onClick={() => setShowColorPicker(true)}>
                 Change Color
               </DropdownMenuItem>
+              {onDeleteHabit && (
+                <DropdownMenuItem 
+                  onClick={onDeleteHabit}
+                  className="text-red-600 hover:text-red-600 focus:text-red-600"
+                >
+                  Delete Habit
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -202,28 +192,42 @@ export function HabitHeatmapPanel({
           {/* Fixed Y-axis area */}
           <div className="flex flex-col">
             {/* Spacer for month headers */}
-            <div className="h-6 mb-2" />
+            <div className="h-5 sm:h-6 mb-1" />
             <YAxisLabels />
           </div>
           
           {/* Scrollable content area */}
-          <div className="flex-1 overflow-x-auto heatmap-scroll-container relative">
-            <div className="min-w-max px-1">
-              {/* Month headers */}
-              <div className="mb-2">
-                <MonthHeaderRow monthsData={monthsData} />
+          <div 
+            ref={scrollContainerRef}
+            className="flex-1 overflow-x-auto lg:overflow-x-visible heatmap-scroll-container relative"
+          >
+            <div className="min-w-max lg:min-w-full lg:w-full">
+              {/* Month labels */}
+              <div className="relative h-5 sm:h-6 mb-1 text-xs text-gray-500">
+                {monthLabels.map((label, index) => (
+                  <div
+                    key={index}
+                    className="absolute"
+                    style={{
+                      left: `calc(${label.column} * var(--cell-total))`,
+                      minWidth: 'max-content'
+                    }}
+                  >
+                    {label.name}
+                  </div>
+                ))}
               </div>
               
-              {/* Heatmap grid */}
-              <HeatmapGrid 
-                monthsData={monthsData}
+              {/* Continuous heatmap grid */}
+              <ContinuousGrid 
+                gridDays={gridDays}
                 onDayClick={handleDayClick}
               />
             </div>
             
-            {/* Scroll indicator shadows */}
-            <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none scroll-shadow-left opacity-0" />
-            <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none scroll-shadow-right" />
+            {/* Scroll indicator shadows for mobile */}
+            <div className="absolute inset-y-0 left-0 w-6 sm:w-8 pointer-events-none scroll-shadow-left" />
+            <div className="absolute inset-y-0 right-0 w-6 sm:w-8 pointer-events-none scroll-shadow-right" />
           </div>
         </div>
       </div>

@@ -108,6 +108,51 @@ export function calculateCompletionPercentage(stats: HabitStats, totalDaysInYear
 }
 
 /**
+ * Calculate statistics for rolling 365 days
+ */
+export function calculateRollingStats(entries: HabitEntry[]): HabitStats {
+  // Get date range for last 365 days
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - 364); // 365 days including today
+  
+  // Filter entries to last 365 days
+  const rollingEntries = entries.filter(entry => {
+    const entryDate = new Date(entry.date);
+    return entryDate >= startDate && entryDate <= today;
+  });
+  
+  // Generate all days in the rolling period
+  const allDays: string[] = [];
+  for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+    allDays.push(formatDateISO(new Date(d)));
+  }
+  
+  const entriesMap = createEntriesMap(rollingEntries);
+  
+  const values = rollingEntries.map(e => e.value);
+  const numberOfEntries = rollingEntries.filter(e => e.value === 1).length;
+  const total = values.reduce((a: number, b) => a + b, 0);
+  const average = numberOfEntries > 0 ? total / 365 : 0;
+  
+  // Population standard deviation for binary data (0/1)
+  const variance = average * (1 - average);
+  const stdDev = Math.sqrt(variance);
+  
+  const longestStreak = calculateLongestStreak(allDays, entriesMap);
+  const currentStreak = calculateCurrentStreak(allDays, entriesMap);
+  
+  return {
+    longestStreak,
+    numberOfEntries,
+    average,
+    stdDev,
+    total,
+    currentStreak
+  };
+}
+
+/**
  * Format statistics for display
  */
 export function formatStats(stats: HabitStats) {

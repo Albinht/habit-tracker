@@ -41,12 +41,10 @@ export function DayCell({ day, onClick }: DayCellProps) {
               height: 'var(--cell-size)',
               backgroundColor: cellColor,
               borderRadius: '2px',
-              border: day.isToday && day.value === null ? '1px solid var(--cell-outline)' : '1px solid #e5e7eb',
-              transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+              border: day.isToday ? '2px solid currentColor' : 'none',
+              transform: isHovered ? 'scale(1.2)' : 'scale(1)',
               minWidth: 'var(--cell-size)',
-              minHeight: 'var(--cell-size)',
-              padding: '2px',
-              margin: '-2px'
+              minHeight: 'var(--cell-size)'
             }}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}

@@ -10,39 +10,40 @@ interface ContinuousGridProps {
 
 export function ContinuousGrid({ gridDays, onDayClick }: ContinuousGridProps) {
   return (
-    <div className="flex-1 overflow-x-auto">
-      <div 
-        className="grid gap-0.5"
-        style={{
-          gridTemplateRows: 'repeat(7, 13px)',
-          gridTemplateColumns: 'repeat(53, 13px)',
-          gridAutoFlow: 'column',
-          minWidth: '750px' // Ensure minimum width for mobile scroll
-        }}
-      >
-        {/* Render all cells in column-first order */}
-        {gridDays.map((week, weekIndex) => 
-          week.map((day, dayIndex) => {
-            if (!day) {
-              // Empty cell for padding
-              return (
-                <div 
-                  key={`empty-${weekIndex}-${dayIndex}`}
-                  className="w-[13px] h-[13px]"
-                />
-              )
-            }
-            
+    <div 
+      className="grid gap-[var(--cell-gap)] lg:w-full"
+      style={{
+        gridTemplateRows: 'repeat(7, var(--cell-size))',
+        gridTemplateColumns: `repeat(53, var(--cell-size))`,
+        gridAutoFlow: 'column',
+        minWidth: 'calc(53 * var(--cell-total))'
+      }}
+    >
+      {/* Render all cells in column-first order */}
+      {gridDays.map((week, weekIndex) => 
+        week.map((day, dayIndex) => {
+          if (!day) {
+            // Empty cell for padding
             return (
-              <DayCell
-                key={day.date}
-                day={day}
-                onClick={() => onDayClick(day.date)}
+              <div 
+                key={`empty-${weekIndex}-${dayIndex}`}
+                style={{
+                  width: 'var(--cell-size)',
+                  height: 'var(--cell-size)'
+                }}
               />
             )
-          })
-        )}
-      </div>
+          }
+          
+          return (
+            <DayCell
+              key={day.date}
+              day={day}
+              onClick={() => onDayClick(day.date)}
+            />
+          )
+        })
+      )}
     </div>
   )
 }

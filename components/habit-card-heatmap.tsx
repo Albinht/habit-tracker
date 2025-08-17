@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { HabitHeatmapPanel } from '@/components/habit-heatmap-panel'
 import { convertHabitToHeatmapFormat } from '@/lib/utils/data-conversion'
 import type { HabitEntry } from '@/lib/types/habit'
@@ -25,6 +26,8 @@ interface HabitCardWithHeatmapProps {
 }
 
 export function HabitCardWithHeatmap({ habit: prismaHabit }: HabitCardWithHeatmapProps) {
+  const router = useRouter()
+  
   // Convert Prisma habit format to HeatmapPanel format
   const [habit, setHabit] = useState(() => convertHabitToHeatmapFormat(prismaHabit))
   
@@ -62,6 +65,40 @@ export function HabitCardWithHeatmap({ habit: prismaHabit }: HabitCardWithHeatma
     console.log('Entry updated:', entry)
   }
 
+  // Handle habit deletion
+  const handleDeleteHabit = async () => {
+    // Prevent deletion of mock habits
+    if (habit.id.startsWith('mock-')) {
+      alert('Demo habits cannot be deleted. Create a real habit to test deletion.')
+      return
+    }
+
+    if (!confirm(`Are you sure you want to delete "${habit.name}"? This action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/habits/${habit.id}`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        window.location.reload()
+      } else {
+        const errorData = await response.text()
+        console.error('Failed to delete habit:', response.status, errorData)
+        alert('Failed to delete habit. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting habit:', error)
+      alert('An error occurred while deleting the habit. Please try again.')
+    }
+  }
+
   return (
     <div className="w-full">
       <HabitHeatmapPanel
@@ -69,6 +106,7 @@ export function HabitCardWithHeatmap({ habit: prismaHabit }: HabitCardWithHeatma
         entries={entries}
         onChangeColor={handleColorChange}
         onUpsertEntry={handleUpsertEntry}
+        onDeleteHabit={handleDeleteHabit}
       />
     </div>
   )
