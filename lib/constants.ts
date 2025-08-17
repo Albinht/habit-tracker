@@ -1,5 +1,8 @@
 // All features are now free - no limits or restrictions
 
+export const TRIAL_DAYS = 7
+export const FREE_HABIT_LIMIT = 100 // Generous limit since features are free
+
 export const DEFAULT_HABIT_COLORS = [
   '#10b981', // Emerald
   '#3b82f6', // Blue

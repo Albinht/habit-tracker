@@ -52,7 +52,7 @@ export default async function HabitPage({ params }: { params: Promise<{ id: stri
       <HabitDetail 
         habit={habit} 
         stats={stats}
-        isPro={user.isPro}
+        isPro={true}
       />
     </div>
   )
