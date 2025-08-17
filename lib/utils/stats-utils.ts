@@ -80,7 +80,7 @@ export function calculateHabitStats(entries: HabitEntry[], year: number): HabitS
   
   const values = yearEntries.map(e => e.value);
   const numberOfEntries = yearEntries.length;
-  const total = values.reduce((a, b) => a + b, 0);
+  const total = values.reduce((a: number, b) => a + b, 0);
   const average = numberOfEntries ? total / numberOfEntries : 0;
   
   // Population standard deviation for binary data (0/1)

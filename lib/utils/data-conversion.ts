@@ -10,7 +10,7 @@ interface PrismaHabit {
   id: string
   name: string
   color: string
-  goalValue: number
+  goalValue: number | null
   entries: PrismaEntry[]
 }
 
@@ -21,12 +21,13 @@ interface PrismaHabit {
 export function convertHabitEntries(
   habitId: string,
   entries: PrismaEntry[],
-  goalValue: number
+  goalValue: number | null
 ): HabitEntry[] {
+  const defaultGoal = goalValue ?? 1 // Use 1 as default if goalValue is null
   return entries.map(entry => ({
     habitId,
     date: entry.date instanceof Date ? entry.date.toISOString().split('T')[0] : entry.date,
-    value: entry.value >= goalValue ? 1 : 0, // Binary: 1 if goal met, 0 if not
+    value: entry.value >= defaultGoal ? 1 : 0, // Binary: 1 if goal met, 0 if not
     // Note: journal entries would need to be added to the Prisma schema
     // journal: entry.journal || undefined
   }))

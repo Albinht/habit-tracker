@@ -18,8 +18,8 @@ interface HabitCardWithHeatmapProps {
     description: string | null
     color: string
     unit: string | null
-    goalValue: number
-    goalType: string
+    goalValue: number | null
+    goalType: string | null
     entries: PrismaEntry[]
   }
 }

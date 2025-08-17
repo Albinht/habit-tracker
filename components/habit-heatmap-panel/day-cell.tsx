@@ -42,8 +42,7 @@ export function DayCell({ day, onClick }: DayCellProps) {
               backgroundColor: cellColor,
               borderRadius: '2px',
               border: day.isToday && day.value === null ? '1px solid var(--cell-outline)' : '1px solid #e5e7eb',
-              transform: isHovered ? 'scale(1.1)' : 'scale(1)',
-              focusRingColor: 'var(--habit-accent)'
+              transform: isHovered ? 'scale(1.1)' : 'scale(1)'
             }}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}

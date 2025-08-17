@@ -13,9 +13,13 @@ export async function getCurrentUser() {
       id: 'mock-user-id',
       email: 'albinht@gmail.com',
       name: 'Albin',
+      isPro: true,
+      trialEndsAt: null,
+      stripeCustomerId: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       password: 'password123',
+      subscription: null,
     }
   }
 

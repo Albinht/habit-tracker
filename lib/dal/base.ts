@@ -50,7 +50,14 @@ export async function requireAuth() {
 export async function requireProPlan() {
   const user = await requireAuth()
   
-  if (!user.isPro && (!user.trialEndsAt || user.trialEndsAt < new Date())) {
+  // Since all features are now free, everyone is considered Pro
+  // This check is kept for future use if needed
+  const now = new Date()
+  const isInTrial = user.trialEndsAt && user.trialEndsAt > now
+  const hasActiveSubscription = user.subscription?.status === 'active'
+  const isPro = true // All users are Pro for now
+  
+  if (!isPro && !isInTrial && !hasActiveSubscription) {
     throw new ForbiddenError('This feature requires a Pro subscription')
   }
   

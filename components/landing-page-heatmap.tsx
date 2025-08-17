@@ -13,7 +13,7 @@ export function LandingPageHeatmap() {
 
   // Handle color change for demo
   const handleColorChange = (habitId: string, newColor: string) => {
-    setHabit(prev => ({ ...prev, color: newColor }))
+    setHabit((prev: any) => ({ ...prev, color: newColor }))
   }
 
   // Handle entry updates for demo
