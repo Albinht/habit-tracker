@@ -154,7 +154,7 @@ Flow:
 ## Testing Authentication
 
 ### Test Users
-- Fast login: `fastuser1755380037743@example.com` / `password123`
+- Fast login: `albinht@gmail.com` / `password123`
 - Regular: `test@example.com` / `testpassword`
 
 ### Test Scenarios
