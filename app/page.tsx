@@ -81,17 +81,17 @@ export default function LandingPage() {
       </div>
 
       {/* Habit Heatmap Section */}
-      <div className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="py-12 sm:py-20">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-8">
           {/* Interactive Heatmap Demo */}
           <LandingPageHeatmap />
           
           {/* Supporting Text */}
-          <div className="text-center mt-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mt-8 sm:mt-12 px-2">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Thousands of people are building stronger habits every day.
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6">
+            <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed mb-6">
               From <strong>drinking more water</strong> to <strong>sleeping better</strong>, our heatmaps make your progress visible and keep your streaks alive. 
               Whether you're <u>quitting smoking</u>, <u>staying fit</u>, <u>meditating daily</u>, or <u>drinking enough water</u>, 
               every completed day builds momentum for lasting change.

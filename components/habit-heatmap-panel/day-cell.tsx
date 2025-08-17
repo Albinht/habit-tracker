@@ -37,8 +37,8 @@ export function DayCell({ day, onClick }: DayCellProps) {
           <button
             className="relative focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all"
             style={{
-              width: '13px',
-              height: '13px',
+              width: '10px',
+              height: '10px',
               backgroundColor: cellColor,
               borderRadius: '2px',
               border: day.isToday && day.value === null ? '1px solid var(--cell-outline)' : '1px solid #e5e7eb',

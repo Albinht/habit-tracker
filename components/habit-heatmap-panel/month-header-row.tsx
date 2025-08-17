@@ -5,30 +5,22 @@ interface MonthHeaderRowProps {
 }
 
 export function MonthHeaderRow({ monthsData }: MonthHeaderRowProps) {
-  let totalWeeks = 0
-
   return (
-    <div className="mt-4 flex text-xs text-gray-500">
-      {/* Offset for Y-axis labels */}
-      <div className="mr-2" style={{ width: '28px' }} />
-      
+    <div className="flex text-xs text-gray-500">
       {/* Month labels */}
-      <div className="flex">
-        {monthsData.map((monthData) => {
-          const monthWidth = monthData.totalWeeks * 15 // 13px cell + 2px gap
-          totalWeeks += monthData.totalWeeks
-          
-          return (
-            <div 
-              key={`${monthData.year}-${monthData.month}`}
-              className="font-medium"
-              style={{ width: `${monthWidth}px`, minWidth: '20px' }}
-            >
-              {monthData.name}
-            </div>
-          )
-        })}
-      </div>
+      {monthsData.map((monthData) => {
+        const monthWidth = monthData.totalWeeks * 12 // 10px cell + 2px gap
+        
+        return (
+          <div 
+            key={`${monthData.year}-${monthData.month}`}
+            className="font-medium text-xs"
+            style={{ width: `${monthWidth}px`, minWidth: '16px' }}
+          >
+            {monthData.name}
+          </div>
+        )
+      })}
     </div>
   )
 }

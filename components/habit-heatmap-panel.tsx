@@ -94,14 +94,14 @@ export function HabitHeatmapPanel({
 
   return (
     <section 
-      className="rounded-xl border bg-white p-6 w-full"
+      className="rounded-xl border bg-white p-3 sm:p-6 w-full"
       style={getCSSVariables(habit.color)}
     >
       {/* Header */}
-      <header className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">{habit.name}</h2>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">{selectedYear}</span>
+      <header className="flex items-center justify-between mb-2 sm:mb-0">
+        <h2 className="text-lg sm:text-2xl font-semibold truncate pr-2">{habit.name}</h2>
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <span className="text-xs sm:text-sm text-gray-500">{selectedYear}</span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
@@ -146,22 +146,29 @@ export function HabitHeatmapPanel({
       </header>
 
       {/* Month labels */}
-      <MonthHeaderRow monthsData={monthsData} />
+      <div className="mt-4 flex">
+        <div className="mr-2" style={{ width: '28px' }} />
+        <div className="flex-1 overflow-x-auto">
+          <MonthHeaderRow monthsData={monthsData} />
+        </div>
+      </div>
 
       {/* Heatmap area */}
       <div className="mt-2 flex">
         {/* Y-axis labels */}
         <YAxisLabels />
         
-        {/* Grid container */}
-        <HeatmapGrid 
-          monthsData={monthsData}
-          onDayClick={handleDayClick}
-        />
+        {/* Scrollable grid container */}
+        <div className="flex-1 overflow-x-auto">
+          <HeatmapGrid 
+            monthsData={monthsData}
+            onDayClick={handleDayClick}
+          />
+        </div>
       </div>
 
       {/* Footer stats */}
-      <footer className="mt-6 flex items-start justify-between">
+      <footer className="mt-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <StatsPanel stats={stats} />
         <CompletedPill isCompleted={isCompletedToday} />
       </footer>

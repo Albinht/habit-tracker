@@ -36,7 +36,7 @@ export function LandingPageHeatmap() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-0">
       <HabitHeatmapPanel
         habit={habit}
         entries={entries}
