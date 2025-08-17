@@ -24,9 +24,15 @@ export default function DashboardLayout({
                 <Image 
                   src="/notion-avatar-1755390000172.svg" 
                   alt="niblah Logo" 
-                  width={36} 
-                  height={36}
+                  width={40} 
+                  height={40}
+                  priority
                   className="w-9 h-9 sm:w-10 sm:h-10"
+                  style={{
+                    width: 'auto',
+                    height: 'auto',
+                    maxWidth: '100%'
+                  }}
                 />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">niblah</h1>
