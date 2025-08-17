@@ -64,7 +64,6 @@ export default function DemoPage() {
         <div className="space-y-8">
           <HabitHeatmapPanel
             habit={habit}
-            year={2025}
             entries={entries}
             onChangeColor={handleChangeColor}
             onUpsertEntry={handleUpsertEntry}
