@@ -42,6 +42,7 @@ export function LandingPageHeatmap() {
         entries={entries}
         onChangeColor={handleColorChange}
         onUpsertEntry={handleUpsertEntry}
+        variant="landing"
       />
     </div>
   )

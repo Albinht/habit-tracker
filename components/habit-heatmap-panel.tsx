@@ -25,6 +25,7 @@ interface HabitHeatmapPanelProps {
   entries: HabitEntry[]
   onChangeColor?: (habitId: string, color: string) => void
   onUpsertEntry?: (entry: HabitEntry) => void
+  variant?: 'default' | 'landing'
 }
 
 export function HabitHeatmapPanel({
@@ -32,7 +33,8 @@ export function HabitHeatmapPanel({
   year = new Date().getFullYear(),
   entries,
   onChangeColor,
-  onUpsertEntry
+  onUpsertEntry,
+  variant = 'default'
 }: HabitHeatmapPanelProps) {
   const [selectedYear, setSelectedYear] = useState(year)
   const [isJournalOpen, setIsJournalOpen] = useState(false)
@@ -94,9 +96,58 @@ export function HabitHeatmapPanel({
 
   return (
     <section 
-      className="rounded-xl border bg-white p-3 sm:p-6 w-full"
-      style={getCSSVariables(habit.color)}
+      className={`rounded-xl border bg-white p-3 sm:p-6 w-full heatmap-panel ${variant === 'landing' ? 'heatmap-landing' : ''}`}
+      style={{
+        ...getCSSVariables(habit.color),
+        '--cell-size': '8px',
+        '--cell-gap': '1px',
+        '--cell-total': '9px'
+      } as React.CSSProperties}
     >
+      <style jsx>{`
+        .heatmap-panel {
+          --cell-size: 8px;
+          --cell-gap: 1px;
+          --cell-total: 9px;
+        }
+        @media (min-width: 768px) {
+          .heatmap-panel {
+            --cell-size: 10px;
+            --cell-gap: 1px;
+            --cell-total: 11px;
+          }
+        }
+        @media (min-width: 1024px) {
+          .heatmap-panel {
+            --cell-size: 13px;
+            --cell-gap: 2px;
+            --cell-total: 15px;
+          }
+          .heatmap-landing {
+            --cell-size: 16px;
+            --cell-gap: 2px;
+            --cell-total: 18px;
+          }
+        }
+        .heatmap-scroll-container {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          scroll-behavior: smooth;
+        }
+        .heatmap-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+        .heatmap-scroll-container:not(:hover) .scroll-shadow-left,
+        .heatmap-scroll-container:not(:hover) .scroll-shadow-right {
+          transition: opacity 0.3s ease;
+        }
+        .heatmap-scroll-container.can-scroll-left .scroll-shadow-left {
+          opacity: 1;
+        }
+        .heatmap-scroll-container.can-scroll-right .scroll-shadow-right {
+          opacity: 1;
+        }
+      `}</style>
       {/* Header */}
       <header className="flex items-center justify-between mb-2 sm:mb-0">
         <h2 className="text-lg sm:text-2xl font-semibold truncate pr-2">{habit.name}</h2>
@@ -145,25 +196,35 @@ export function HabitHeatmapPanel({
         </div>
       </header>
 
-      {/* Month labels */}
-      <div className="mt-4 flex">
-        <div className="mr-2" style={{ width: '28px' }} />
-        <div className="flex-1 overflow-x-auto">
-          <MonthHeaderRow monthsData={monthsData} />
-        </div>
-      </div>
-
-      {/* Heatmap area */}
-      <div className="mt-2 flex">
-        {/* Y-axis labels */}
-        <YAxisLabels />
-        
-        {/* Scrollable grid container */}
-        <div className="flex-1 overflow-x-auto">
-          <HeatmapGrid 
-            monthsData={monthsData}
-            onDayClick={handleDayClick}
-          />
+      {/* Unified heatmap container */}
+      <div className="mt-4">
+        <div className="flex">
+          {/* Fixed Y-axis area */}
+          <div className="flex flex-col">
+            {/* Spacer for month headers */}
+            <div className="h-6 mb-2" />
+            <YAxisLabels />
+          </div>
+          
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-x-auto heatmap-scroll-container relative">
+            <div className="min-w-max px-1">
+              {/* Month headers */}
+              <div className="mb-2">
+                <MonthHeaderRow monthsData={monthsData} />
+              </div>
+              
+              {/* Heatmap grid */}
+              <HeatmapGrid 
+                monthsData={monthsData}
+                onDayClick={handleDayClick}
+              />
+            </div>
+            
+            {/* Scroll indicator shadows */}
+            <div className="absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-white to-transparent pointer-events-none scroll-shadow-left opacity-0" />
+            <div className="absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-white to-transparent pointer-events-none scroll-shadow-right" />
+          </div>
         </div>
       </div>
 

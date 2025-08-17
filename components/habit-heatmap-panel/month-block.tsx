@@ -15,7 +15,13 @@ export function MonthBlock({ monthData, onDayClick }: MonthBlockProps) {
   // Add padding cells for start offset
   for (let i = 0; i < startOffset; i++) {
     gridItems.push(
-      <div key={`padding-${i}`} style={{ width: '10px', height: '10px' }} />
+      <div 
+        key={`padding-${i}`} 
+        style={{ 
+          width: 'var(--cell-size)', 
+          height: 'var(--cell-size)' 
+        }} 
+      />
     )
   }
   
@@ -32,12 +38,12 @@ export function MonthBlock({ monthData, onDayClick }: MonthBlockProps) {
 
   return (
     <div
-      className="grid gap-px sm:gap-0.5"
+      className="grid month-block"
       style={{
-        gridTemplateRows: 'repeat(7, 10px)',
-        gridTemplateColumns: `repeat(${totalWeeks}, 10px)`,
+        gridTemplateRows: 'repeat(7, var(--cell-size))',
+        gridTemplateColumns: `repeat(${totalWeeks}, var(--cell-size))`,
         gridAutoFlow: 'column',
-        minWidth: `${totalWeeks * 12}px` // 10px cell + 2px gap
+        gap: 'var(--cell-gap)'
       }}
     >
       {gridItems}

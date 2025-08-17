@@ -35,18 +35,24 @@ export function DayCell({ day, onClick }: DayCellProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            className="relative focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all"
+            className="relative focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all touch-manipulation day-cell"
             style={{
-              width: '10px',
-              height: '10px',
+              width: 'var(--cell-size)',
+              height: 'var(--cell-size)',
               backgroundColor: cellColor,
               borderRadius: '2px',
               border: day.isToday && day.value === null ? '1px solid var(--cell-outline)' : '1px solid #e5e7eb',
-              transform: isHovered ? 'scale(1.1)' : 'scale(1)'
+              transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+              minWidth: 'var(--cell-size)',
+              minHeight: 'var(--cell-size)',
+              padding: '2px',
+              margin: '-2px'
             }}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
             aria-pressed={day.value === 1}
             aria-label={`${formatTooltipDate(day.date)}, ${getStatusText(day.value)}${hasJournal ? ', Journal present' : ''}`}
           >

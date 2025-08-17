@@ -6,16 +6,17 @@ interface MonthHeaderRowProps {
 
 export function MonthHeaderRow({ monthsData }: MonthHeaderRowProps) {
   return (
-    <div className="flex text-xs text-gray-500">
+    <div className="flex text-xs text-gray-500 h-6">
       {/* Month labels */}
-      {monthsData.map((monthData) => {
-        const monthWidth = monthData.totalWeeks * 12 // 10px cell + 2px gap
-        
+      {monthsData.map((monthData, index) => {
         return (
           <div 
             key={`${monthData.year}-${monthData.month}`}
-            className="font-medium text-xs"
-            style={{ width: `${monthWidth}px`, minWidth: '16px' }}
+            className="font-medium text-xs month-header"
+            style={{
+              width: `calc(var(--cell-total) * ${monthData.totalWeeks})`,
+              minWidth: 'calc(var(--cell-total) * 2)'
+            }}
           >
             {monthData.name}
           </div>
