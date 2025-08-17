@@ -28,11 +28,6 @@ export default function DashboardLayout({
                   height={40}
                   priority
                   className="w-9 h-9 sm:w-10 sm:h-10"
-                  style={{
-                    width: 'auto',
-                    height: 'auto',
-                    maxWidth: '100%'
-                  }}
                 />
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">niblah</h1>
