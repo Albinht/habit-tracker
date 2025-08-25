@@ -12,7 +12,7 @@ export function LandingPageHeatmap() {
   const [entries, setEntries] = useState<HabitEntry[]>(sampleData.entries)
 
   // Handle color change for demo
-  const handleColorChange = (habitId: string, newColor: string) => {
+  const handleColorChange = (_habitId: string, newColor: string) => {
     setHabit((prev: any) => ({ ...prev, color: newColor }))
   }
 
@@ -36,7 +36,7 @@ export function LandingPageHeatmap() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-0">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-4">
       <HabitHeatmapPanel
         habit={habit}
         entries={entries}

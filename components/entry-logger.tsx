@@ -60,36 +60,48 @@ export function EntryLogger({ habitId, unit }: EntryLoggerProps) {
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const data = await response.json()
+        console.error('Entry save failed:', data)
         setError(data.error || 'Failed to log entry')
-      } else {
-        // If journal entry exists, save it
-        if (journal) {
-          const journalResponse = await fetch(`/api/habits/${habitId}/journal`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              date,
-              content: journal,
-            }),
-          })
-          
-          if (!journalResponse.ok) {
-            console.error('Failed to save journal entry')
-          }
-        }
-        
-        setSuccess(true)
-        setValue('')
-        setJournal('')
-        setShowJournal(false)
-        setTimeout(() => setSuccess(false), 3000)
-        router.refresh()
+        return
       }
+
+      // Verify entry was actually saved
+      console.log('Entry saved successfully:', data)
+
+      // If journal entry exists, save it
+      if (journal) {
+        const journalResponse = await fetch(`/api/habits/${habitId}/journal`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date,
+            content: journal,
+          }),
+        })
+        
+        if (!journalResponse.ok) {
+          const journalData = await journalResponse.json()
+          console.error('Failed to save journal entry:', journalData)
+          // Don't fail the whole operation if just journal fails
+        }
+      }
+      
+      setSuccess(true)
+      setValue('')
+      setJournal('')
+      setShowJournal(false)
+      setTimeout(() => setSuccess(false), 3000)
+      
+      // Force a hard refresh to ensure data is reloaded
+      window.location.reload()
+      
     } catch (error) {
+      console.error('Entry logging error:', error)
       setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
@@ -117,16 +129,24 @@ export function EntryLogger({ habitId, unit }: EntryLoggerProps) {
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const data = await response.json()
+        console.error('Quick log failed:', data)
         setError(data.error || 'Failed to log entry')
-      } else {
-        setSuccess(true)
-        setValue('')
-        setTimeout(() => setSuccess(false), 3000)
-        router.refresh()
+        return
       }
+
+      console.log('Quick log saved successfully:', data)
+      setSuccess(true)
+      setValue('')
+      setTimeout(() => setSuccess(false), 3000)
+      
+      // Force a hard refresh to ensure data is reloaded
+      window.location.reload()
+      
     } catch (error) {
+      console.error('Quick log error:', error)
       setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)

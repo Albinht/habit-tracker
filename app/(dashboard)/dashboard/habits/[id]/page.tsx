@@ -6,6 +6,10 @@ import { HabitDetail } from '@/components/habit-detail'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { revalidateTag } from 'next/cache'
+
+// Force revalidation of this page data
+export const revalidate = 0
 
 export default async function HabitPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

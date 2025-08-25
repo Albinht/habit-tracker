@@ -5,6 +5,9 @@ import { HabitCardWithHeatmap } from '@/components/habit-card-heatmap'
 import { YearOverview } from '@/components/year-overview'
 import { NewHabitDropdown } from '@/components/new-habit-dropdown'
 
+// Force revalidation of dashboard data
+export const revalidate = 0
+
 export default async function DashboardPage() {
   const user = await getCurrentUser()
   

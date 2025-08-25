@@ -138,6 +138,7 @@ export async function POST(
         where: { id: existingEntry.id },
         data: { value: parseFloat(value) }
       })
+      console.log('Entry updated:', updatedEntry)
       return NextResponse.json(updatedEntry)
     } else {
       // Create new entry
@@ -148,6 +149,7 @@ export async function POST(
           value: parseFloat(value)
         }
       })
+      console.log('Entry created:', entry)
       return NextResponse.json(entry)
     }
   } catch (error) {
